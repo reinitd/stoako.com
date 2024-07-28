@@ -1,8 +1,8 @@
-import { board } from "../../../../lib/fetchMembers";
+import { dukes } from "../../../../lib/fetchMembers";
 
 export async function GET(): Promise<Response> {
     try {
-        const data = await board();
+        const data = await dukes();
 
         return new Response(JSON.stringify(data), {
             headers: { 'Content-Type': 'application/json' }
