@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { all } from "../../../lib/fetchMembers";
+import { all } from "../../../lib/fetchCitizens";
 import { githubAuthHeader } from "../../../helpers/secrets";
 import { fromTree } from "../../../lib/fetchData";
 import { Buffer } from "buffer";
@@ -12,11 +12,11 @@ export async function getStaticPaths() {
   const data = await all(authHeader);
 
   let paths = [];
-  for (let i = 0; i < data.members.length; i++) {
-    const member = data.members[i];
-    const memberName = member.name.replace(" ", "-").trim().toLowerCase();
+  for (let i = 0; i < data.citizens.length; i++) {
+    const citizen = data.citizens[i];
+    const citizenName = citizen.name.replace(" ", "-").trim().toLowerCase();
     paths.push({
-      params: { name: memberName },
+      params: { name: citizenName },
     });
   }
 
@@ -27,9 +27,9 @@ const { name } = Astro.params;
 
 const data = await all(authHeader);
 
-const member = data.members.find((member) => member.name === name);
-const role = member?.role;
-const joinDate = member?.joinDate;
+const citizen = data.citizens.find((citizen) => citizen.name === name);
+const role = citizen?.role;
+const joinDate = citizen?.joinDate;
 
 const reportsData = await fromTree("reports", authHeader);
 
@@ -41,7 +41,7 @@ for (let i = 0; i < reportsData.length; i++) {
   const reportData = await reportResponse.json();
 
   const content = Buffer.from(reportData.content, "base64").toString("binary");
-  if (content.includes(`/members/member/${name}`)) {
+  if (content.includes(`/citizens/citizen/${name}`)) {
     const parsed = matter(content);
     const id = parsed.data.id.toUpperCase().replace("R-", "");
     const reportUrl = `/reports/${id}`;
@@ -70,7 +70,7 @@ if (mojangData.id) {
 }
 ---
 
-<Layout title=`Stoako | Members > Member > ${name}`>
+<Layout title=`Stoako | Citizens > Citizen > ${name}`>
   <table width="100%">
     <tbody>
       <tr>

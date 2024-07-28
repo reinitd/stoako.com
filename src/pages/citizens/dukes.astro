@@ -1,26 +1,26 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { dukes } from "../../lib/fetchMembers";
+import { dukes } from "../../lib/fetchCitizens";
 import { githubAuthHeader } from "../../helpers/secrets";
 
 const authHeader = (await githubAuthHeader()) || {};
 
-async function setMembers(): Promise<string> {
+async function setCitizens(): Promise<string> {
     const data = await dukes(authHeader);
     
     let htmlString = "";
-    for (var i = 0; i < data.members.length; i++) {
-        const member = data.members[i];
-        htmlString += `<tr><td><a href="/members/member/${member.name.toLowerCase().replace(" ", "-")}">${member.name}</a></td><td align="center">${member.role}</td><td align="center">${member.joinDate}</td></tr>`;
+    for (var i = 0; i < data.citizens.length; i++) {
+        const citizen = data.citizens[i];
+        htmlString += `<tr><td><a href="/citizens/citizen/${citizen.name.toLowerCase().replace(" ", "-")}">${citizen.name}</a></td><td align="center">${citizen.role}</td><td align="center">${citizen.joinDate}</td></tr>`;
     }
     
     return htmlString;
 }
 ---
 
-<Layout title="Stoako | Members > Board">
+<Layout title="Stoako | Citizens > Board">
     <table class="data-table" width="70%" cellpadding="1" cellspacing="1">
-        <tbody set:html={setMembers()}>
+        <tbody set:html={setCitizens()}>
             <tr>
                 <th align="left">Duke</th>
                 <th>Role</th>

@@ -7,6 +7,6 @@ export default defineConfig({
     integrations: [sitemap()],
     redirects: {
         '/api/v1': '/api',
-        '/members/member': '/'
+        '/citizens/citizen': '/'
     }
 });

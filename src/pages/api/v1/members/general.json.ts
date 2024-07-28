@@ -1,4 +1,4 @@
-import { general } from "../../../../lib/fetchMembers";
+import { general } from "../../../../lib/fetchCitizens";
 
 export async function GET(): Promise<Response> {
     try {
@@ -8,7 +8,7 @@ export async function GET(): Promise<Response> {
             headers: { 'Content-Type': 'application/json' }
         });
     } catch (error: any) {
-        console.error('Error fetching general members data:', error);
+        console.error('Error fetching general citizens data:', error);
         return new Response(JSON.stringify({ error: error.message }), {
             status: 500,
             headers: { 'Content-Type': 'application/json' }

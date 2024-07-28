@@ -92,13 +92,13 @@ async function setMeetingSchedule(): Promise<string> {
           <tbody>
             <tr>
               <br />
-              <th align="left">Search Members</th>
+              <th align="left">Search Citizens</th>
             </tr>
             <tr>
               <td>
-                <div id="memberForm">
-                  <input style="width: 65%;" type="text" id="memberName" />
-                  <button id="memberFormSubmit">Go</button>
+                <div id="citizenForm">
+                  <input style="width: 65%;" type="text" id="citizenName" />
+                  <button id="citizenFormSubmit">Go</button>
                 </div>
               </td>
             </tr>
@@ -123,15 +123,15 @@ async function setMeetingSchedule(): Promise<string> {
     });
 
   document
-    .getElementById("memberFormSubmit")!
+    .getElementById("citizenFormSubmit")!
     .addEventListener("click", function (event) {
       event.preventDefault();
       //@ts-ignore
-      const memberId = document.getElementById("memberName")!.value.trim();
-      if (!memberId) {
+      const citizenId = document.getElementById("citizenName")!.value.trim();
+      if (!citizenId) {
         return;
       }
-      window.location.href = `/members/member/${memberId.toLowerCase().replace(" ", "-")}`;
+      window.location.href = `/citizens/citizen/${citizenId.toLowerCase().replace(" ", "-")}`;
     });
 </script>
 

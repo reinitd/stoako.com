@@ -214,7 +214,7 @@ for (var i = 0; i < data.length; i++) {
     for (const person of content.data.documentedBy) {
       let [name, href] = Object.entries(person)[0];
       if (href != null) {
-        href = href.replace("/members/member/", "");
+        href = href.replace("/citizens/citizen/", "");
       }
       href = href || "#";
 

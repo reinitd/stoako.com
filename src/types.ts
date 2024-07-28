@@ -4,14 +4,14 @@ export type AuthHeader = {
     };
 };
 
-export type Member = {
+export type Citizen = {
     name: string;
     role: string;
     joinDate: string;
 };
 
-export type MembersList = {
-    members: Member[];
+export type CitizensList = {
+    citizens: Citizen[];
 };
 
 export type WatchlistEntry = {
