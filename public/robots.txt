@@ -40,4 +40,4 @@ Allow: /
 User-agent: *
 Disallow: /
 
-Sitemap: https://stoako.com/sitemap-index.xml
+Sitemap: https://stoako.com/sitemap-0
