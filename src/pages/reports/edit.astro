@@ -175,12 +175,12 @@ for (var i = 0; i < data.length; i++) {
   }
   (async () => {
     const params = new URLSearchParams(document.location.search);
-    const id = params.get("id").toUpperReport();
+    const id = params.get("id").toUpperCase();
 
     let requestedReport = undefined;
     for (let i = 0; i < validReports.length; i++) {
       const _report = validReports[i];
-      if (id === _report.id.toUpperReport()) {
+      if (id === _report.id.toUpperCase()) {
         requestedReport = _report;
         break;
       }
