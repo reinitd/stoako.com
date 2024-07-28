@@ -8,7 +8,7 @@ async function setMembers(): Promise<string> {
     let htmlString = "";
     for (var i = 0; i < data.members.length; i++) {
         const member = data.members[i];
-        htmlString += `<tr><td><a href="/members/member/${member.name.toLowerReport().replace(" ", "-")}">${member.name}</a></td><td align="center">${member.role}</td><td align="center">${member.joinDate}</td></tr>`;
+        htmlString += `<tr><td><a href="/members/member/${member.name.toLowerCase().replace(" ", "-")}">${member.name}</a></td><td align="center">${member.role}</td><td align="center">${member.joinDate}</td></tr>`;
     }
     
     return htmlString;

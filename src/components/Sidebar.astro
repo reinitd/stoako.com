@@ -119,7 +119,7 @@ async function setMeetingSchedule(): Promise<string> {
       if (!reportId) {
         return;
       }
-      window.location.href = `/reports/${reportId.toLowerReport().replace("c-", "")}`;
+      window.location.href = `/reports/${reportId.toLowerCase().replace("c-", "")}`;
     });
 
   document
@@ -131,7 +131,7 @@ async function setMeetingSchedule(): Promise<string> {
       if (!memberId) {
         return;
       }
-      window.location.href = `/members/member/${memberId.toLowerReport().replace(" ", "-")}`;
+      window.location.href = `/members/member/${memberId.toLowerCase().replace(" ", "-")}`;
     });
 </script>
 
