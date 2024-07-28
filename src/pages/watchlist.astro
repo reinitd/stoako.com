@@ -1,0 +1,97 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { watchlist } from "../lib/fetchWatchlist";
+import { githubAuthHeader } from "../helpers/secrets";
+import type { Watchlist, WatchlistEntry } from "../types";
+
+export const authHeader = (await githubAuthHeader()) || {};
+
+const data = (await watchlist(authHeader)).watchlist;
+
+let htmlString = "";
+for (let i = 0; i < data.length; i++) {
+  const watchee = data[i];
+  let reportId = watchee.relatedReportId;
+  let reportHref;
+  if (reportId === null) {
+    reportId = "No report"
+    reportHref = "#";
+  } else {
+    reportHref = `/reports/${reportId}`;
+  }
+
+  htmlString += `
+    <tr align="center">
+        <td>
+            <table class="notice" width="90%" cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr class="accent bg">
+                    <th>No. ${i + 1} — ${watchee.name}</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table cellpadding="0" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        <th align="left">Aliases:</th>
+                                        <td style="padding-left: 5px; font-family: monospace;">${watchee.aliases.join("; ")}</td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        
+                                        <th align="left">Discord UID:</th>
+                                        <td style="padding-left: 5px; font-family: monospace;">${watchee.discordUserId}</td>
+                                    </tr>
+                                    <tr>
+                                        <th align="left">Related Report:</th>
+                                        <td style="padding-left: 5px; font-family: monospace;">
+                                            <a href="${reportHref}">${reportId}</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <hr/>
+                            <article>${watchee.reason.trim()}</article>
+                        </td>
+                    </tr>    
+                </tbody>
+            </table>
+        </td>
+    </tr>`;
+}
+---
+
+<Layout title="Stoako | Watchlist">
+  <table width="100%" cellpadding="10">
+    <tbody set:html={htmlString} />
+  </table>
+</Layout>
+
+<style is:global>
+  .notice {
+    border-left: 2px solid var(--c-accent);
+    border-right: 2px solid var(--c-accent);
+    border-bottom: 2px solid var(--c-accent);
+    padding-bottom: 2.5px;
+    font-size: .9rem;
+  }
+  .notice article {
+    margin-top: 5px;
+    text-indent: 2rem;
+  }
+  .notice tr td {
+    padding: 0 5px;
+  }
+  /* .notice tr th {
+    font-size: .8rem;
+  } */
+  .notice > tbody > tr > th {
+    padding: 2.5px 5px;
+    text-align: left;
+    font-size: 1rem;
+  }
+</style>

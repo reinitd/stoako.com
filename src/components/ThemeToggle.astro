@@ -1,0 +1,27 @@
+---
+
+---
+
+<button id="toggle-theme" style="position:fixed;right:10px;top:10px;"
+  >Dark Theme</button
+>
+
+<script>
+  function addStyle(styleString: string) {
+    const style = document.createElement("style");
+    style.textContent = styleString;
+    document.head.append(style);
+  }
+  const toggleThemeButton = document.getElementById("toggle-theme")!;
+  toggleThemeButton.addEventListener("click", () => {
+    let style;
+    if (toggleThemeButton.textContent?.includes("Dark")) {
+      toggleThemeButton.textContent = "Light theme";
+      style = `:root { --c-bg: #222222; --c-text: whitesmoke; --c-text-accent: #3232c5; --c-hover: grey; }`;
+    } else {
+      toggleThemeButton.textContent = "Dark theme";
+      style = `:root { --c-bg: whitesmoke; --c-text: #2c2c2c; --c-text-accent: navy; --c-hover: black; }`;
+    }
+    addStyle(style);
+  });
+</script>

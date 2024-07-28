@@ -1,0 +1,36 @@
+---
+import Links from "./Links.astro";
+---
+
+<span id="footer">
+  <span><Links color="var(--c-text-accent)" /></span>
+</span>
+<span id="sub-footer">
+  <img src="/images/stoako.png" width="5%" style="padding-right: .5rem;" />
+  <small
+    >Copyright 2024 (c) The Government of Stoako. All Rights Reserved.</small
+  >
+</span>
+
+<style>
+  #footer {
+    display: inline-flex;
+    width: 100%;
+    border-top: 2px solid var(--c-accent);
+    border-bottom: 2px solid var(--c-accent);
+    margin-bottom: 5px;
+    justify-content: space-around;
+    font-size: 0.8rem;
+  }
+  #footer span {
+    display: inline-flex;
+    margin: 5px 0;
+    gap: 10px;
+  }
+  #sub-footer {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>

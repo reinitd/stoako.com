@@ -1,0 +1,151 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const response = await fetch(
+  "https://github.com/reinitd/stoako-data/blob/main/header.json?raw=true"
+);
+
+if (!response.ok) {
+  throw new Error("Couldn't get header data from GitHub.");
+}
+
+const data = await response.json();
+const headerString = data.text;
+---
+
+<Layout title="Stoako">
+  <div style="padding-bottom: 12.5vh;">
+    <div id="headline">
+      <header>Headline</header>
+      <article>{headerString}</article>
+    </div>
+    <table>
+      <tbody>
+        <tr class="width-99p">
+          <td>
+            <strong><u>Primary Information</u></strong>
+          </td>
+        </tr>
+        <tr class="width-99p">
+          <td>
+            <a href="#">Bills and Resolutions</a>
+            <a href="#">Passed Acts</a>
+            <a href="/reports">Reports</a>
+            <a href="#">Public Reports</a>
+          </td>
+          <td class="td-spacer"></td>
+          <td>
+            <a href="#">Public Notices</a>
+            <a href="#">Petitions</a>
+            <a href="/watchlist">Watchlist</a>
+			<a href="#">Amendments</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <br />
+            <strong><u>Members</u></strong>
+          </td>
+        </tr>
+        <tr class="width-99p">
+          <td>
+            <a href="/members/royalty">Royalty</a>
+            <a href="/members/dukes">Dukes</a>
+            <a href="/members/general">General</a>
+          </td>
+          <td class="td-spacer"></td>
+          <td>
+			<a href="/members/all">All</a>
+            <a href="#">Become a Citizen</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <br />
+            <strong><u>Public Documents</u></strong>
+          </td>
+        </tr>
+        <tr class="width-99p">
+          <td>
+            <a href="#">Constitution</a>
+          </td>
+          <td class="td-spacer"></td>
+          <td>
+            <a href="#">Directory</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <br />
+            <strong><u>Allies</u></strong>
+          </td>
+        </tr>
+        <tr class="width-99p">
+          <td>
+            <p>Contact us if you're interested.</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <br />
+            <strong><u>Contact Us</u></strong>
+          </td>
+        </tr>
+        <tr class="width-99p">
+          <td>
+            <!-- <p>Don't.</p> -->
+            <img src="/images/donot.webp" alt="Don't." width="125" />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</Layout>
+
+<style is:global>
+  .td-spacer {
+    width: 25%;
+  }
+</style>
+<style>
+  header {
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: whitesmoke;
+    background-color: var(--c-accent);
+  }
+  #headline {
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid var(--c-accent);
+    border-right: 2px solid var(--c-accent);
+    border-bottom: 2px solid var(--c-accent);
+    margin: 10px 0;
+    padding-bottom: 10px;
+  }
+  #headline article {
+    font-size: 0.9rem;
+    padding: 0 10px;
+  }
+  td {
+    font-size: 0.9rem;
+  }
+  td a {
+    display: block;
+    text-decoration: none;
+    color: var(--c-text-accent);
+  }
+  td a,
+  td p {
+    font-weight: bold;
+    padding-bottom: 5px;
+  }
+  td a:hover {
+    color: var(--c-hover);
+  }
+  td strong {
+    font-size: 1.05rem;
+  }
+</style>

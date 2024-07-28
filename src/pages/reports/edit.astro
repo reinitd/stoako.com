@@ -1,0 +1,290 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import matter from "gray-matter";
+import { Buffer } from "buffer";
+import { fromTree } from "../../lib/fetchData";
+import { githubAuthHeader } from "../../helpers/secrets";
+
+const authHeader = (await githubAuthHeader()) || {};
+
+const data = await fromTree("reports", authHeader);
+
+let validReports = [];
+for (var i = 0; i < data.length; i++) {
+  const _report = data[i];
+  const reportName = _report.path.replace(".txt", "");
+  const reportUrl = _report.url;
+  // https://stackoverflow.com/a/10272822/14363702 - Thanks
+  const first = reportName.substring(0, reportName.indexOf(" "));
+
+  const response = await fetch(reportUrl, authHeader);
+  const jsonData = await response.json();
+
+  if (jsonData === undefined) {
+    throw new Error(
+      "GitHub is most likely ratelimiting your API requests to get content."
+    );
+  }
+
+  const reportParsedContent = matter(
+    Buffer.from(jsonData.content, "base64").toString("binary")
+  );
+
+  validReports.push({
+    id: `R-${first}`,
+    url: reportUrl,
+    parsedContent: reportParsedContent,
+  });
+}
+---
+
+<Layout title="Stoako | Reports > Edit">
+  <table width="100%">
+    <tbody>
+      <tr id="fetcher">
+        <td align="center">
+          <table>
+            <tbody>
+              <tr>
+                <td>
+                  <form autocomplete="off">
+                    <label>
+                      Report ID to edit:
+                      <br />
+                      <input
+                        type="text"
+                        name="id"
+                        spellcheck="false"
+                        placeholder="R-xxx"
+                        required="true"
+                      />
+                    </label>
+                    <button type="submit">Fetch</button>
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+      <tr id="editor" class="hidden">
+        <td align="center">
+          <!-- <table>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <form autocomplete="off">
+                                        <label>
+                                            <strong>ID:</strong> <span id="js-editor-id"></span>
+                                        </label>
+                                        <br/>
+                                        <button type="submit">Preview</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table> -->
+          <form autocomplete="off">
+            <table width="90%">
+              <tbody>
+                <tr>
+                  <td>
+                    <a href="/reports">&lt;&lt; Go back to reports</a>
+                    <br />
+                    <br />
+                  </td>
+                </tr>
+                <tr>
+                  <td id="js-editor-id">id</td>
+                </tr>
+                <tr>
+                  <td align="center"
+                    ><span
+                      ><input
+                        class="resize-input"
+                        type="text"
+                        required="true"
+                        id="js-editor-title"
+                      /></span
+                    ></td
+                  >
+                </tr>
+                <tr>
+                  <td>
+                    <table width="100%">
+                      <tbody>
+                        <tr>
+                          <colgroup class="width-50"></colgroup>
+                          <colgroup class="width-50"></colgroup>
+                          <td
+                            >Documented by:<br /><span
+                              id="js-editor-documented-by"></span>
+                            <span style="margin-left: 10px;">
+                              <button
+                                id="js-editor-action-remove-documenter"
+                                type="button">-</button
+                              >
+                              <button
+                                id="js-editor-action-add-documenter"
+                                type="button">+</button
+                              >
+                            </span>
+                          </td>
+                          <td id="js-editor-date" align="right"> </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <article id="js-editor-text" style="margin-top: 10px;">
+                    </article>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- <button type="submit">Preview</button> -->
+          </form>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</Layout>
+
+<script is:inline define:vars={{ validReports }}>
+  function adjustWidth(element) {
+    const span = document.createElement("span");
+    span.style.visibility = "hidden";
+    span.style.position = "absolute";
+    span.style.whiteSpace = "pre";
+    span.style.fontSize = window.getComputedStyle(element).fontSize;
+    span.style.fontFamily = window.getComputedStyle(element).fontFamily;
+    span.textContent = element.value || element.placeholder || "";
+
+    document.body.appendChild(span);
+    const width = span.getBoundingClientRect().width;
+    document.body.removeChild(span);
+
+    element.style.width = `${width + 2}px`;
+  }
+  function resizeInputs() {
+    [...document.getElementsByClassName("resize-input")].forEach((element) => {
+      adjustWidth(element);
+    });
+  }
+  (async () => {
+    const params = new URLSearchParams(document.location.search);
+    const id = params.get("id").toUpperReport();
+
+    let requestedReport = undefined;
+    for (let i = 0; i < validReports.length; i++) {
+      const _report = validReports[i];
+      if (id === _report.id.toUpperReport()) {
+        requestedReport = _report;
+        break;
+      }
+    }
+    if (requestedReport === undefined) {
+      alert(`Report '${id}' does not exist!`);
+      return;
+    }
+
+    const content = requestedReport.parsedContent;
+    const editor = {
+      id: document.getElementById("js-editor-id"),
+      title: document.getElementById("js-editor-title"),
+      documentedBy: document.getElementById("js-editor-documented-by"),
+      date: document.getElementById("js-editor-date"),
+      text: document.getElementById("js-editor-text"),
+      actions: {
+        removeDocumenter: document.getElementById(
+          "js-editor-action-remove-documenter"
+        ),
+        addDocumenter: document.getElementById(
+          "js-editor-action-add-documenter"
+        ),
+      },
+    };
+
+    document.getElementById("fetcher").classList.add("hidden");
+    document.getElementById("editor").classList.remove("hidden");
+
+    let documentedByHtmlString = "";
+    for (const person of content.data.documentedBy) {
+      let [name, href] = Object.entries(person)[0];
+      if (href != null) {
+        href = href.replace("/members/member/", "");
+      }
+      href = href || "#";
+
+      documentedByHtmlString += `<p style="margin-left: 10px;">&lt;a href="<input class="resize-input" type="text" required="true" value="${href}" />"&gt;<input class="resize-input" type="text" required="true" value="${name}" />&lt;/a&gt;</p>`;
+    }
+
+    editor.documentedBy.innerHTML = documentedByHtmlString;
+
+    editor.id.textContent = id;
+    editor.title.value = content.data.title;
+
+    // const date = document.createElement("input");
+    // date.type = "text";
+    // date.classList.add("resize-input");
+    // date.required = "true";
+    // date.value = content.data.date;
+    // editor.date.appendChild(date);
+    editor.date.textContent = content.data.date;
+
+    const text = document.createElement("textarea");
+    text.style.width = "100%";
+    text.style.resize = "vertical";
+    text.required = "true";
+    // text.value = content.content.trim();
+    text.value = content.content
+      .split("\n")
+      .map((line) => line.trim())
+      .join(" ")
+      .trim();
+
+    editor.text.appendChild(text);
+    text.style.height = `${text.scrollHeight}px`;
+
+    resizeInputs();
+    document.addEventListener("input", (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (!target.matches(".resize-input")) return;
+      adjustWidth(target);
+    });
+
+    editor.actions.addDocumenter.addEventListener("click", () => {
+      editor.documentedBy.innerHTML += `<p style="margin-left: 10px;">&lt;a href="<input class="resize-input" type="text" required="true" value="href" />"&gt;<input class="resize-input" type="text" required="true" value="name" />&lt;/a&gt;</p>`;
+      resizeInputs();
+    });
+    editor.actions.removeDocumenter.addEventListener("click", () => {
+      const lastChild =
+        editor.documentedBy.children[editor.documentedBy.children.length - 1];
+      if (lastChild) {
+        lastChild.remove();
+      }
+    });
+  })();
+</script>
+
+<style>
+  .hidden {
+    display: none;
+  }
+  #editor * {
+    font-family: monospace !important;
+  }
+</style>
+
+<style is:global>
+  #editor input,
+  #editor textarea {
+    background-color: inherit;
+    outline: 0;
+    border: 1px solid grey;
+    color: var(--c-text);
+  }
+</style>

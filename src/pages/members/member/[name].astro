@@ -1,0 +1,153 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { all } from "../../../lib/fetchMembers";
+import { githubAuthHeader } from "../../../helpers/secrets";
+import { fromTree } from "../../../lib/fetchData";
+import { Buffer } from "buffer";
+import matter from "gray-matter";
+
+export const authHeader = (await githubAuthHeader()) || {};
+
+export async function getStaticPaths() {
+  const data = await all(authHeader);
+
+  let paths = [];
+  for (let i = 0; i < data.members.length; i++) {
+    const member = data.members[i];
+    const memberName = member.name.replace(" ", "-").trim().toLowerReport();
+    paths.push({
+      params: { name: memberName },
+    });
+  }
+
+  return paths;
+}
+
+const { name } = Astro.params;
+
+const data = await all(authHeader);
+
+const member = data.members.find((member) => member.name === name);
+const role = member?.role;
+const joinDate = member?.joinDate;
+
+const reportsData = await fromTree("reports", authHeader);
+
+let reports = [];
+for (let i = 0; i < reportsData.length; i++) {
+  const _report = reportsData[i];
+  const url = _report.url;
+  const reportResponse = await fetch(url, authHeader);
+  const reportData = await reportResponse.json();
+
+  const content = Buffer.from(reportData.content, "base64").toString("binary");
+  if (content.includes(`/members/member/${name}`)) {
+    const parsed = matter(content);
+    const id = parsed.data.id.toUpperReport().replace("C-", "");
+    const reportUrl = `/reports/${id}`;
+    const title = parsed.data.title;
+    const date = parsed.data.date;
+    reports.push({ id: id, title: title, date: date, url: reportUrl });
+  }
+}
+
+let reportsHtmlString = "";
+for (const _report of reports) {
+  reportsHtmlString += `<tr><td><a href=${_report.url}>C-${_report.id}</a></td><td align="center">${_report.title}</td><td align="center">${_report.date}</td></tr>`;
+}
+
+let photoUrl;
+const mojangRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`);
+if (!mojangRes.ok) {
+  photoUrl = 'https://ih1.redbubble.net/image.4990736138.0725/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.webp';
+}
+
+const mojangData = await mojangRes.json();
+if (mojangData.id) {
+  photoUrl = `https://crafthead.net/avatar/${mojangData.id}`;
+} else {
+  photoUrl = 'https://ih1.redbubble.net/image.4990736138.0725/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.webp';
+}
+---
+
+<Layout title=`Stoako | Members > Member > ${name}`>
+  <table width="100%">
+    <tbody>
+      <tr>
+        <td>
+          <table>
+            <tbody>
+              <tr>
+                <colgroup class="width-70"></colgroup>
+                <colgroup class="width-30"></colgroup>
+                <td valign="top">
+                  <h1 style="margin: 0; font-size: 1.1rem;">{name}</h1>
+                  <table id="stats">
+                    <tbody>
+                      <tr>
+                        <th>Role:</th>
+                        <td>{role}</td>
+                      </tr>
+                      <tr>
+                        <th>Joined:</th>
+                        <td>{joinDate}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <strong style="margin: 0; font-size: .8rem;"
+                    >Reports {name} is in:</strong
+                  >
+                  <table
+                    id="reports"
+                    width="100%"
+                    class="data-table"
+                    cellpadding="1"
+                    cellspacing="1"
+                  >
+                    <tbody set:html={reportsHtmlString}>
+                      <tr>
+                        <th align="left">Report ID</th>
+                        <th>Title</th>
+                        <th>Date</th>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+                <td valign="top" align="right">
+                  <img
+                    width="209px"
+                    src=`${photoUrl}`
+                    alt=`Photo of ${name}`
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</Layout>
+
+<style>
+  #stats {
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  .width-70 {
+    width: 70%;
+  }
+  .width-30 {
+    width: 30%;
+  }
+</style>
+
+<style is:global>
+  /* #reports {
+    min-width: 70%;
+  } */
+  #reports tr td {
+    padding: 0 5px;
+  }
+</style>

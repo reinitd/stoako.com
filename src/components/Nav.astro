@@ -1,0 +1,40 @@
+---
+import Links from "./Links.astro"
+---
+
+<nav>
+  <span id="top">
+    <img src="/images/websitebanner.png" />
+  </span>
+  <span id="bottom">
+    <Links color="white" />
+  </span>
+</nav>
+
+<style>
+  nav {
+    padding-top: 2px;
+    display: flex;
+    flex-direction: column;
+  }
+  nav > #top {
+    display: inline-flex;
+  }
+  nav > #top > img {
+    padding: 0;
+    margin: 0;
+  }
+  nav > #bottom {
+    display: inline-flex;
+    color: white;
+    background-color: var(--c-accent);
+    padding: 7px;
+    font-weight: bold;
+    font-size: 0.7rem;
+    gap: 10px;
+  }
+  nav > #bottom a {
+    color: white;
+    text-decoration: none;
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+import ReportLayout from "../../layouts/ReportLayout.astro";
+import matter from "gray-matter";
+import { Buffer } from "buffer";
+import { githubAuthHeader } from "../../helpers/secrets";
+import { fromTree } from "../../lib/fetchData";
+
+export const authHeader = (await githubAuthHeader()) || {};
+
+export async function getStaticPaths() {
+  const data = await fromTree("reports", authHeader);
+
+  let paths = [];
+  for (var i = 0; i < data.length; i++) {
+    const _report = data[i];
+    const reportName = _report.path.replace(".txt", "");
+    // https://stackoverflow.com/a/10272822/14363702 - Thanks
+    const first = reportName.substring(0, reportName.indexOf(" "));
+    paths.push({ params: { id: first } });
+  }
+
+  return paths;
+}
+
+const { id } = Astro.params;
+const data = await fromTree("reports", authHeader);
+
+const item = data.find((item: { path: string }) =>
+  item.path.includes(`${id} `)
+);
+const url = item ? item.url : undefined;
+if (url === undefined) {
+  throw new Error(`Unable to fetch url, url is undefined.`);
+}
+
+const response = await fetch(url, authHeader);
+if (!response.ok) {
+  throw new Error(`Error fetching file content for ${id} from GitHub.`);
+}
+const contentData = await response.json();
+const content = Buffer.from(contentData.content, "base64").toString("binary");
+const parsed = matter(content);
+const frontMatter = parsed.data;
+const text = parsed.content;
+
+let documentedByHtmlString = "Documented by:<br/>";
+for (const person of frontMatter.documentedBy) {
+  const [name, href] = Object.entries(person)[0];
+  documentedByHtmlString += `<a style="margin-left: 10px;" href="${href || "#"}">${name}</a>;`;
+}
+---
+
+<ReportLayout
+  title=`Stoako | Reports > ${frontMatter.id} - ${frontMatter.title}`
+  embedTitle=`Stoako | Reports > ${frontMatter.id} - ${frontMatter.title}`
+  embedDescription=`${text.substring(0,200)}...`
+>
+  <table width="100%" style="font-family: monospace;">
+    <tbody>
+      <tr>
+        <td align="center" valign="top">
+          <table width="90%">
+            <tbody>
+              <tr>
+                <td>
+                    <a href="/reports">&lt;&lt; Go back to reports</a>
+                    <br/>
+                    <br/>
+                </td>
+              </tr>
+              <tr>
+                <td>{frontMatter.id}</td>
+              </tr>
+              <tr>
+                <td align="center">{frontMatter.title}</td>
+              </tr>
+              <tr>
+                <td>
+                  <table width="100%">
+                    <tbody>
+                      <tr>
+                        <colgroup class="width-50"></colgroup>
+                        <colgroup class="width-50"></colgroup>
+                        <td set:html={documentedByHtmlString} />
+                        <td align="right">{frontMatter.date}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <article style="margin-top: 10px; text-indent: 2rem;">
+                    {text}
+                  </article>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ReportLayout>
+
+<style>
+  .width-50 {
+    width: 50%;
+  }
+</style>

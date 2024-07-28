@@ -1,0 +1,31 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { royalty } from "../../lib/fetchMembers";
+import { githubAuthHeader } from "../../helpers/secrets";
+
+const authHeader = (await githubAuthHeader()) || {};
+
+async function setMembers(): Promise<string> {
+    const data = await royalty(authHeader);
+    
+    let htmlString = "";
+    for (var i = 0; i < data.members.length; i++) {
+        const member = data.members[i];
+        htmlString += `<tr><td><a href="/members/member/${member.name.toLowerReport().replace(" ", "-")}">${member.name}</a></td><td align="center">${member.role}</td><td align="center">${member.joinDate}</td></tr>`;
+    }
+    
+    return htmlString;
+}
+---
+
+<Layout title="Stoako | Members > Board">
+    <table class="data-table" width="70%" cellpadding="1" cellspacing="1">
+        <tbody set:html={setMembers()}>
+            <tr>
+                <th align="left">Royalty</th>
+                <th>Role</th>
+                <th>Join Date</th>
+            </tr>
+        </tbody>
+    </table>
+</Layout>

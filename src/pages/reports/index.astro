@@ -1,0 +1,65 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+async function setReports(): Promise<string> {
+  let response = await fetch(
+    "https://api.github.com/repos/reinitd/stoako-data/git/trees/main"
+  );
+  if (!response.ok) {
+    throw new Error("Error fetching tree from GitHub.");
+  }
+  let data = await response.json();
+  response = await fetch(
+    data.tree.find((item: { path: string }) => item.path === "reports").url
+  );
+  if (!response.ok) {
+    throw new Error("Error fetching tree from GitHub.");
+  }
+  data = await response.json();
+  data = data.tree;
+
+  let htmlString = "";
+  for (var i = 0; i < data.length; i++) {
+    const _report = data[i];
+    const reportName = _report.path.replace(".txt", "");
+    // https://stackoverflow.com/a/10272822/14363702 - Thanks
+    const first = reportName.substring(0, reportName.indexOf(" ")); // This and below is quicker than using spread syntax, apparently.
+    const second = reportName.substring(reportName.indexOf(" ") + 1);
+    htmlString += `<br/><a href="/reports/${first}">R-${first} - ${second}</a>`;
+  }
+
+  return htmlString;
+}
+---
+
+<Layout title="Stoako | Reports">
+  <div set:html={setReports()}>
+    <a href="/reports/edit"><button>Edit a Report</button></a>
+  </div>
+</Layout>
+
+
+<style>
+    a {
+      text-decoration: none;
+      background-color: var(--c-accent);
+      padding: 10px;
+      background-image: linear-gradient(
+        to top left,
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0.2) 30%,
+        rgba(0, 0, 0, 0)
+      );
+      box-shadow:
+        inset 2px 2px 3px rgba(255, 255, 255, 0.6),
+        inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+    }
+    button {
+      margin-bottom: 20px;
+      background-color: transparent;
+      color: white;
+      border: 0;
+      cursor: pointer;
+    }
+  </style>
+  

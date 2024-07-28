@@ -1,0 +1,147 @@
+---
+async function setMeetingSchedule(): Promise<string> {
+  // const resp = await fetch(new URL("/api/meetingschedule", Astro.url));
+  const resp = await fetch(
+    "https://github.com/reinitd/stoako-data/blob/main/meetingschedule.json?raw=true"
+  );
+  if (!resp.ok) {
+    throw new Error("Couldn't fetch meet schedule data from GitHub.");
+  }
+  const data = await resp.json();
+  let htmlString = "";
+
+  data.meetings.forEach((meeting: any) => {
+    htmlString += `<strong>${meeting.name}</strong><br/>`;
+    if (meeting.today) {
+      htmlString += `<strong style="padding: 0;margin:0;">Today: ${meeting.today}</strong><br/>`;
+    } else if (meeting.next) {
+      htmlString += `<strong style="padding: 0;margin:0;">Next: ${meeting.next}</strong>`;
+    } else if (meeting.next && meeting.today) {
+      data.htmlString += `<strong style="padding: 0;margin:0;">Today: ${meeting.today}</strong><br/><strong style="padding: 0;margin:0;">Next: ${meeting.next}</strong>`;
+    }
+  });
+
+  return htmlString;
+}
+---
+
+<table class="sidebar" border="0" width="140" cellpadding="0" cellspacing="2">
+  <tbody>
+    <tr>
+      <td class="sidebar">
+        <table
+          align="center"
+          border="1"
+          width="125"
+          cellspacing="0"
+          cellpadding="1"
+        >
+          <tbody>
+            <tr>
+              <th align="center" class="accent bg" style="font-size: .9rem;"
+                >MEETING SCHEDULE</th
+              >
+            </tr>
+            <tr>
+              <td>
+                <table width="100%" border="0">
+                  <tbody>
+                    <tr>
+                      <td
+                        align="center"
+                        style="font-size: .7rem;"
+                        set:html={setMeetingSchedule()}
+                      />
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table style="font-size: .8rem;">
+          <tbody>
+            <tr>
+              <br />
+              <th align="left">Search Reports</th>
+            </tr>
+            <tr>
+              <td>
+                <div id="reportForm">
+                  <input
+                    style="width: 65%;"
+                    type="text"
+                    id="reportId"
+                    placeholder="C-xxx"
+                  />
+                  <button id="reportFormSubmit">Go</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table style="font-size: .8rem;">
+          <tbody>
+            <tr>
+              <br />
+              <th align="left">Search Members</th>
+            </tr>
+            <tr>
+              <td>
+                <div id="memberForm">
+                  <input style="width: 65%;" type="text" id="memberName" />
+                  <button id="memberFormSubmit">Go</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+  document
+    .getElementById("reportFormSubmit")!
+    .addEventListener("click", function (event) {
+      event.preventDefault();
+      //@ts-ignore
+      const reportId = document.getElementById("reportId")!.value.trim();
+      if (!reportId) {
+        return;
+      }
+      window.location.href = `/reports/${reportId.toLowerReport().replace("c-", "")}`;
+    });
+
+  document
+    .getElementById("memberFormSubmit")!
+    .addEventListener("click", function (event) {
+      event.preventDefault();
+      //@ts-ignore
+      const memberId = document.getElementById("memberName")!.value.trim();
+      if (!memberId) {
+        return;
+      }
+      window.location.href = `/members/member/${memberId.toLowerReport().replace(" ", "-")}`;
+    });
+</script>
+
+<style>
+  table.sidebar {
+    margin-top: 0px;
+    margin-left: 0px;
+    text-indent: 2px;
+  }
+  td.sidebar {
+    padding: 7px;
+  }
+</style>

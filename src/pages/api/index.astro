@@ -1,0 +1,16 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+let data = "All data, other than this endpoint, returns JSON.\n";
+data += "\nOne-offs:";
+data += "\n  GET /api/v1/headline.json            Headline text.";
+data += "\n  GET /api/v1/meetingschedule.json     Schedule of upcoming and current meetings.\n";
+data += "\nMembers:";
+data += "\n  GET /api/v1/members/board.json       Members part of the board.";
+data += "\n  GET /api/v1/members/general.json     General members.";
+data += "\n  GET /api/v1/members/all.json         All of the members together.";
+---
+
+<Layout title="Stoako | API">
+    <pre><code>{data}</code></pre>
+</Layout>
