@@ -43,7 +43,7 @@ for (let i = 0; i < reportsData.length; i++) {
   const content = Buffer.from(reportData.content, "base64").toString("binary");
   if (content.includes(`/members/member/${name}`)) {
     const parsed = matter(content);
-    const id = parsed.data.id.toUpperCase().replace("C-", "");
+    const id = parsed.data.id.toUpperCase().replace("R-", "");
     const reportUrl = `/reports/${id}`;
     const title = parsed.data.title;
     const date = parsed.data.date;
