@@ -1,8 +1,8 @@
-import { general } from "../../../../lib/fetchCitizens";
+import { getMinisters } from "../../../../lib/fetchCitizens";
 
 export async function GET(): Promise<Response> {
     try {
-        const data = general();
+        const data = getMinisters();
 
         return new Response(JSON.stringify(data), {
             headers: { 'Content-Type': 'application/json' }

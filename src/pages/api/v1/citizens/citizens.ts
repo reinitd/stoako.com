@@ -1,9 +1,9 @@
-import { all } from "../../../../lib/fetchCitizens";
+import { getCitizens } from "../../../../lib/fetchCitizens";
 
 export async function GET(): Promise<Response> {
     try {
 
-        const data = await all();        
+        const data = await getCitizens();        
 
         return new Response(JSON.stringify(data), {
             headers: { 'Content-Type': 'application/json' }

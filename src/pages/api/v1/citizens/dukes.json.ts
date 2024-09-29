@@ -1,8 +1,8 @@
-import { dukes } from "../../../../lib/fetchCitizens";
+import { getDukes } from "../../../../lib/fetchCitizens";
 
 export async function GET(): Promise<Response> {
     try {
-        const data = await dukes();
+        const data = await getDukes();
 
         return new Response(JSON.stringify(data), {
             headers: { 'Content-Type': 'application/json' }
