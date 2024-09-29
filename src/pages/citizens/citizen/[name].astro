@@ -1,6 +1,6 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { all } from "../../../lib/fetchCitizens";
+import { getCitizens } from "../../../lib/fetchCitizens";
 import { githubAuthHeader } from "../../../helpers/secrets";
 import { fromTree } from "../../../lib/fetchData";
 import { Buffer } from "buffer";
@@ -9,7 +9,7 @@ import matter from "gray-matter";
 export const authHeader = (await githubAuthHeader()) || {};
 
 export async function getStaticPaths() {
-  const data = await all(authHeader);
+  const data = await getCitizens(authHeader);
 
   let paths = [];
   for (let i = 0; i < data.citizens.length; i++) {
@@ -25,10 +25,10 @@ export async function getStaticPaths() {
 
 const { name } = Astro.params;
 
-const data = await all(authHeader);
+const data = await getCitizens(authHeader);
 
 const citizen = data.citizens.find((citizen) => citizen.name === name);
-const role = citizen?.role;
+const roles = citizen?.roles;
 const joinDate = citizen?.joinDate;
 
 const reportsData = await fromTree("reports", authHeader);
@@ -85,8 +85,10 @@ if (mojangData.id) {
                   <table id="stats">
                     <tbody>
                       <tr>
-                        <th>Role:</th>
-                        <td>{role}</td>
+                        <th>Role<small>(s)</small>:</th>
+                        <td set:html={roles!
+                          .map((r) => `${r.role} of ${r.of}`)
+                          .join("<br/>")}></td>
                       </tr>
                       <tr>
                         <th>Joined:</th>

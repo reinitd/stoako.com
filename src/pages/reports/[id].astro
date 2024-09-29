@@ -1,5 +1,5 @@
 ---
-import ReportLayout from "../../layouts/ReportLayout.astro";
+import EmbedLayout from "../../layouts/EmbedLayout.astro";
 import matter from "gray-matter";
 import { Buffer } from "buffer";
 import { githubAuthHeader } from "../../helpers/secrets";
@@ -50,7 +50,7 @@ for (const person of frontMatter.documentedBy) {
 }
 ---
 
-<ReportLayout
+<EmbedLayout
   title=`Stoako | Reports > ${frontMatter.id} - ${frontMatter.title}`
   embedTitle=`Stoako | Reports > ${frontMatter.id} - ${frontMatter.title}`
   embedDescription=`${text.substring(0,200)}...`
@@ -101,7 +101,7 @@ for (const person of frontMatter.documentedBy) {
       </tr>
     </tbody>
   </table>
-</ReportLayout>
+</EmbedLayout>
 
 <style>
   .width-50 {

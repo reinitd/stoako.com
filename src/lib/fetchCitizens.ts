@@ -1,72 +1,59 @@
 import type { AuthHeader, Citizen } from "../types";
 import type { CitizensList } from "../types";
 
-export async function all(headers?: AuthHeader | {}): Promise<CitizensList> {
-    const generalCitizensResponse = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens/general.json?raw=true', headers);
+export async function fetchCitizens(headers?: AuthHeader | {}): Promise<CitizensList> {
+    const response = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens.json?raw=true', headers);
 
-    if (!generalCitizensResponse.ok) {
-        throw new Error("Couldn't get general citizens data from GitHub.");
+    if (!response.ok) {
+        throw new Error("Couldn't get citizens from GitHub.");
     }
 
-    const generalCitizensdata = await generalCitizensResponse.json();
-
-    const dukesResponse = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens/dukes.json?raw=true', headers);
-
-    if (!dukesResponse.ok) {
-        throw new Error("Couldn't get duke citizens data from GitHub.");
-    }
-
-    const dukesData = await dukesResponse.json();
-
-    const royaltyResponse = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens/royalty.json?raw=true', headers);
-
-    if (!royaltyResponse.ok) {
-        throw new Error("Couldn't get royalty citizens data from GitHub.");
-    }
-
-    const royaltyData = await royaltyResponse.json();
-
-    let result = [royaltyData, dukesData, generalCitizensdata];
-    // https://stackoverflow.com/a/47924059/14363702 - Thanks
-    const data = result.reduce(function (r, e) {
-        return Object.keys(e).forEach(function (k) {
-            if (!r[k]) r[k] = [].concat(e[k])
-            else r[k] = r[k].concat(e[k])
-        }), r
-    }, {})
-
+    const data = await response.json() as CitizensList;
     return data;
 }
 
-export async function royalty(headers?: AuthHeader | {}): Promise<CitizensList> {
-    const response = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens/royalty.json?raw=true', headers);
+// Filter for Dukes
+export async function getDukes(headers?: AuthHeader | {}): Promise<CitizensList> {
+    const data = await fetchCitizens(headers);
+    
+    const dukes: CitizensList = {
+        citizens: data.citizens.filter(citizen =>
+            citizen.roles.some(role => role.role === "Duke")
+        )
+    };
 
-    if (!response.ok) {
-        throw new Error("Couldn't get royalty citizens data from GitHub.");
-    }
-
-    const data = await response.json();
-    return data;
+    return dukes;
 }
 
-export async function dukes(headers?: AuthHeader | {}): Promise<CitizensList> {
-    const response = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens/dukes.json?raw=true', headers);
+// Filter for the King
+export async function getKing(headers?: AuthHeader | {}): Promise<CitizensList> {
+    const data = await fetchCitizens(headers);
+    
+    const kings: CitizensList = {
+        citizens: data.citizens.filter(citizen =>
+            citizen.roles.some(role => role.role === "King")
+        )
+    };
 
-    if (!response.ok) {
-        throw new Error("Couldn't get dukes from GitHub.");
-    }
-
-    const data = await response.json();
-    return data;
+    return kings;
 }
 
-export async function general(headers?: AuthHeader | {}): Promise<CitizensList> {
-    const response = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens/general.json?raw=true', headers);
+// Filter for Ministers
+export async function getMinisters(headers?: AuthHeader | {}): Promise<CitizensList> {
+    const data = await fetchCitizens(headers);
+    
+    const ministers: CitizensList = {
+        citizens: data.citizens.filter(citizen =>
+            citizen.roles.some(role => role.role === "Minister")
+        )
+    };
 
-    if (!response.ok) {
-        throw new Error("Couldn't get general citizens data from GitHub.");
-    }
+    return ministers;
+}
 
-    const data = await response.json();
+// Filter for all Citizens
+export async function getCitizens(headers?: AuthHeader | {}): Promise<CitizensList> {
+    const data = await fetchCitizens(headers);
+    
     return data;
 }

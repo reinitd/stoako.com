@@ -1,0 +1,33 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getMinisters } from "../../lib/fetchCitizens";
+import { githubAuthHeader } from "../../helpers/secrets";
+
+const authHeader = (await githubAuthHeader()) || {};
+
+async function setCitizens(): Promise<string> {
+    const data = await getMinisters(authHeader);
+    
+    let htmlString = "";
+    for (var i = 0; i < data.citizens.length; i++) {
+        const citizen = data.citizens[i];
+        htmlString += `<tr><td><a href="/citizens/citizen/${citizen.name.toLowerCase().replace(" ", "-")}">${citizen.name}</a></td><td align="left">${citizen.roles
+      .map((r) => `${r.role} of ${r.of}`)
+      .join("<br/>")}</td><td align="center">${citizen.joinDate}</td></tr>`;
+    }
+    
+    return htmlString;
+}
+---
+
+<Layout title="Stoako | Citizens > Board">
+    <table class="data-table" width="70%" cellpadding="1" cellspacing="1">
+        <tbody set:html={setCitizens()}>
+            <tr>
+                <th align="left">Duke</th>
+                <th>Role</th>
+                <th>Join Date</th>
+            </tr>
+        </tbody>
+    </table>
+</Layout>

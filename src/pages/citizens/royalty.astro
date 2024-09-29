@@ -1,17 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { royalty } from "../../lib/fetchCitizens";
+import { getKing } from "../../lib/fetchCitizens";
 import { githubAuthHeader } from "../../helpers/secrets";
 
 const authHeader = (await githubAuthHeader()) || {};
 
 async function setCitizens(): Promise<string> {
-    const data = await royalty(authHeader);
+    const data = await getKing(authHeader);
     
     let htmlString = "";
     for (var i = 0; i < data.citizens.length; i++) {
         const citizen = data.citizens[i];
-        htmlString += `<tr><td><a href="/citizens/citizen/${citizen.name.toLowerCase().replace(" ", "-")}">${citizen.name}</a></td><td align="center">${citizen.role}</td><td align="center">${citizen.joinDate}</td></tr>`;
+        htmlString += `<tr><td><a href="/citizens/citizen/${citizen.name.toLowerCase().replace(" ", "-")}">${citizen.name}</a></td><td align="left">${citizen.roles
+      .map((r) => `${r.role} of ${r.of}`)
+      .join("<br/>")}</td><td align="center">${citizen.joinDate}</td></tr>`;
     }
     
     return htmlString;

@@ -1,17 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { all } from "../../lib/fetchCitizens";
+import { getCitizens } from "../../lib/fetchCitizens";
 import { githubAuthHeader } from "../../helpers/secrets";
 
 const authHeader = (await githubAuthHeader()) || {};
 
 async function setCitizens(): Promise<string> {
-  const data = await all(authHeader);
+  const data = await getCitizens(authHeader);
 
   let htmlString = "";
   for (var i = 0; i < data.citizens.length; i++) {
     const citizen = data.citizens[i];
-    htmlString += `<tr><td><a href="/citizens/citizen/${citizen.name.toLowerCase().replace(" ", "-")}">${citizen.name}</a></td><td align="center">${citizen.role}</td><td align="center">${citizen.joinDate}</td></tr>`;
+    htmlString += `<tr><td><a href="/citizens/citizen/${citizen.name.toLowerCase().replace(" ", "-")}">${citizen.name}</a></td><td align="left">${citizen.roles
+      .map((r) => `${r.role} of ${r.of}`)
+      .join("<br/>")}</td><td align="center">${citizen.joinDate}</td></tr>`;
   }
 
   return htmlString;
@@ -23,7 +25,7 @@ async function setCitizens(): Promise<string> {
     <tbody set:html={setCitizens()}>
       <tr>
         <th align="left">Citizen</th>
-        <th>Role</th>
+        <th>Role<small>(s)</small></th>
         <th>Join Date</th>
       </tr>
     </tbody>

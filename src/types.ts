@@ -6,9 +6,14 @@ export type AuthHeader = {
 
 export type Citizen = {
     name: string;
-    role: string;
+    roles: CitizenRole[];
     joinDate: string;
 };
+
+export type CitizenRole = {
+  role: string,
+  of: string
+}
 
 export type CitizensList = {
     citizens: Citizen[];
