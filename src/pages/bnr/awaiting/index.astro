@@ -1,0 +1,149 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+
+const propNumber = 0;
+const propYear = 0;
+const propIdentifier = `${propNumber}-${propYear}`;
+const billOrResolution = "bill";
+const date = "Sept. 28th, Y7";
+const title = "Proposition Title";
+const articleCount = 2;
+const articleOrArticles = "articles";
+const reason = "provide an example proposition";
+const ministryString = "Under the Ministry of Something.";
+const proposedBy = '<ul style="margin: 5px 0;"><li>thesandmannn</li></ul>';
+const yesVoters = "name; name; name";
+const noVoters = "name; name;"
+const status = "Awaiting approval from the Council.";
+const resourceCount = 1;
+let propositionImages = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: .25rem;">';
+propositionImages += '<img src="https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/awaiting/1-7/images/1-7/1.png?raw=true" width="100%"/>';
+propositionImages += '<img src="https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/awaiting/1-7/images/1-7/2.png?raw=true" width="100%"/>';
+propositionImages += '<img src="https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/awaiting/1-7/images/1-7/3.png?raw=true" width="100%"/>';
+propositionImages += '<img src="https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/awaiting/1-7/images/1-7/4.png?raw=true" width="100%"/>';
+propositionImages += '<img src="https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/awaiting/1-7/images/1-7/5.png?raw=true" width="100%"/>';
+propositionImages += '<img src="https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/awaiting/1-7/images/1-7/6.png?raw=true" width="100%"/>';
+propositionImages += '</div>';
+---
+
+<Layout title="Stoako | Awaiting BnRs">
+    <h1>THIS IS AN EXAMPLE</h1>
+  <div id="tables">
+    <table width="50%">
+      <thead>
+        <tr>
+          <th
+            align="left"
+            style="font-size: 1.25rem; border-bottom: 2px solid black;"
+            >Status of Prop {propIdentifier}</th
+          >
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <table align="left">
+            <tbody align="left">
+              <tr>
+                <br/>
+                <th>{title}</th>
+              </tr>
+              <tr>
+                <td>
+                  Proposing {articleCount}
+                  {articleOrArticles} to {reason}.
+                  <br />{ministryString}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <br />
+                  <strong>Proposed by:</strong>
+                  <span set:html={proposedBy} />
+                </td>
+              </tr>
+              <tr>
+                <td><br /></td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Proposed:</strong>
+                  {date}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Type:</strong>
+                  {billOrResolution}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Status:</strong>
+                  {status}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Resource Count:</strong>
+                  {resourceCount}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </tr>
+      </tbody>
+    </table>
+    <table width="45%" cellpadding="5" align="center">
+      <tbody>
+        <tr>
+            <td>
+                <strong>Votes:</strong>
+                <br/>
+                <table align="left" width="100%" cellspacing="5" cellpadding="2">
+                    <tr>
+                        <th>yes</th>
+                        <td>{yesVoters}</td>
+                    </tr>
+                    <tr>
+                        <th>no</th>
+                        <td>{noVoters}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Full Text:</strong>
+                <br/>
+                <table align="left" width="100%" cellspacing="5" cellpadding="5">
+                    <tr>
+                        <td>
+                            <a href="#" target="_blank">Prop {propIdentifier}</a>
+                        </td>
+                        <td><a href="#" target="_blank">Resource 1</a></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <details set:html={propositionImages}>
+    <summary>View Proposition {propIdentifier}</summary>
+  </details>
+  <details set:html={propositionImages}>
+    <summary>View Resource 1</summary>
+  </details>
+</Layout>
+
+
+<style>
+    #tables {
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 1.25rem;
+    }
+    #tables > table:last-of-type {
+        /* border: 1px solid yellow; */
+    }
+</style>
