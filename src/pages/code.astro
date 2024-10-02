@@ -3,22 +3,29 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Stoako | Register">
-
-    <strong>Respond to the Discord bot with the following code:</strong>
-    <br/>
-    <code id="js-code-here">Loading...</code>
-    <br/>
-    <br/>
-    <small>This code expires in 5 minutes.</small>
+  <strong>Respond to the Discord bot with the following code:</strong>
+  <br />
+  <code id="js-code-here">Loading...</code>
+  <br />
+  <br />
+  <small>This code expires in 5 minutes.</small>
 </Layout>
 
+<style>
+  code {
+    background-color: #eee;
+    border-radius: 3px;
+    font-family: courier, monospace;
+    padding: 0 3px;
+  }
+</style>
+
 <script is:inline>
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    if (code == null) {
-        window.location.replace("/");
-    }
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  if (code == null) {
+    window.location.replace("/");
+  }
 
-    document.getElementById("js-code-here").textContent = code;
+  document.getElementById("js-code-here").textContent = code;
 </script>
-
