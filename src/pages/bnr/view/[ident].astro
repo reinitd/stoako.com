@@ -1,0 +1,287 @@
+---
+import { githubAuthHeader } from "../../../helpers/secrets";
+import { getAllBnRs, getAllBnRsData } from "../../../lib/fetchBnRs";
+import EmbedLayout from "../../../layouts/EmbedLayout.astro";
+import type { PropositionDocument } from "../../../types";
+
+export const authHeader = (await githubAuthHeader()) || {};
+
+function capitalize(word: string) {
+  if (!word) return word;
+  return word[0].toUpperCase() + word.substr(1).toLowerCase();
+}
+
+export async function getStaticPaths() {
+  const data = await getAllBnRs(authHeader);
+
+  let paths = [];
+  for (let i = 0; i < data.length; i++) {
+    const bnr = data[i];
+    paths.push({
+      params: { ident: bnr },
+    });
+  }
+
+  return paths;
+}
+
+const { ident } = Astro.params;
+
+const docs = await getAllBnRsData(ident.split("-")[1], authHeader);
+if (docs == null) {
+  throw new Error("Docs is null.");
+}
+const bnr: PropositionDocument | undefined = docs.find(
+  (doc) => doc.prop === ident
+);
+
+if (bnr == undefined) {
+  throw new Error("BNR is missing.");
+}
+
+let articleOrArticles = "article";
+if (bnr.articleCount != "1") {
+  articleOrArticles += "s";
+}
+
+let ministryString = "";
+if (bnr.ministryOf != null) {
+  ministryString = bnr.ministryOf;
+}
+
+const proposedBy = `<ul style="margin: 5px 0;">${bnr.proposedBy.map((proposer) => "<li>" + proposer + "</li>").join("")}</ul>`;
+
+const embedDescription = `${bnr.title}, ${bnr.articleCount} ${articleOrArticles} ${bnr.reason}. ${bnr.date}, ${bnr.approvedStatus}`;
+
+const splitIdent = ident.split("-");
+
+const rootImageUrl = `https://api.github.com/repos/reinitd/stoako-bnr-data-images/contents/data/${splitIdent[1]}/${splitIdent[0]}/`;
+
+const propImageDirResp = await fetch(rootImageUrl + bnr.prop, authHeader);
+if (!propImageDirResp.ok) {
+  throw new Error(
+    `Error fetching images of proposition ${bnr.prop} from GitHub (${propImageDirResp.status}).`
+  );
+}
+
+const propImageDir = await propImageDirResp.json();
+let propositionImages: string[] = [];
+for (let i = 0; i < propImageDir.length; i++) {
+  const img = propImageDir[i];
+  propositionImages.push(img.download_url);
+}
+
+let resourcesImages: { ident: string; images: string[] }[] = [];
+for (let i = 0; i < bnr.resources.length; i++) {
+  const r = bnr.resources[i];
+  const resp = await fetch(rootImageUrl + r.identifier, authHeader);
+  if (!resp.ok) {
+    throw new Error(
+      `Error fetching images of resource ${r.identifier} from GitHub (${resp.status}).`
+    );
+  }
+
+  const data = await resp.json();
+  let images: string[] = [];
+  for (let k = 0; k < data.length; k++) {
+    const img = data[k];
+    images.push(img.download_url);
+  }
+
+  resourcesImages.push({ ident: r.identifier, images: images });
+}
+
+const infoUrl = `https://raw.githubusercontent.com/reinitd/stoako-bnr-data/refs/heads/main/data/${splitIdent[1]}/${splitIdent[0]}.json`;
+---
+
+<EmbedLayout
+  title={`Stoako | ${capitalize(bnr.billOrResolution)} ${ident}`}
+  embedTitle={`The Kingdom of Stoako | ${capitalize(bnr.billOrResolution)} ${ident}`}
+  embedDescription={embedDescription}
+>
+  <div id="tables">
+    <table width="50%">
+      <thead>
+        <tr>
+          <th
+            align="left"
+            style="font-size: 1.25rem; border-bottom: 2px solid black;"
+            >Status of Prop {bnr.prop}</th
+          >
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <table align="left">
+            <tbody>
+              <tr>
+                <br />
+                <th align="left">{bnr.title}</th>
+              </tr>
+              <tr>
+                <td>
+                  Proposing {bnr.articleCount}
+                  {articleOrArticles} to {bnr.reason}.
+                  <br />{ministryString}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <br />
+                  <strong>Proposed by:</strong>
+                  <span set:html={proposedBy} />
+                </td>
+              </tr>
+              <tr>
+                <td><br /></td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Date of Proposal:</strong>
+                  {bnr.date}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Type:</strong>
+                  {capitalize(bnr.billOrResolution)}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Status:</strong>
+                  {bnr.approvedStatus}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Resource Count:</strong>
+                  {bnr.resources.length}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </tr>
+      </tbody>
+    </table>
+    <table width="45%" cellpadding="5" align="center">
+      <tbody>
+        <tr>
+          <td>
+            <strong>Votes:</strong>
+            <br />
+            <table align="left" width="100%" cellspacing="5" cellpadding="2">
+              <tr>
+                <th>yes</th>
+                <!-- <td
+                  >{
+                    bnr.votes.yes.length > 0
+                      ? bnr.votes.yes.join("; ")
+                      : "no votes"
+                  }</td
+                > -->
+                <td id="js-votes-yes">Loading...</td>
+              </tr>
+              <tr>
+                <th>no</th>
+                <!-- <td
+                  >{
+                    bnr.votes.no.length > 0
+                      ? bnr.votes.no.join("; ")
+                      : "no votes"
+                  }</td
+                > -->
+                <td id="js-votes-no">Loading...</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <strong>Full Text:</strong>
+            <br />
+            <table align="left" width="100%" cellspacing="5" cellpadding="5">
+              <tr>
+                <td>
+                  <a href={bnr.docLink} target="_blank">Prop {bnr.prop}</a>
+                </td>
+                {
+                  bnr.resources.map((r) => (
+                    <td>
+                      <a href={r.docLink} target="_blank">
+                        {r.identifier}
+                      </a>
+                    </td>
+                  ))
+                }
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <br />
+  <details>
+    <summary>View Proposition {bnr.prop}</summary>
+    <div
+      style="display: grid; grid-template-columns: repeat(2, 1fr); gap: .25rem;"
+    >
+      {propositionImages.map((img) => <img src={img} width="100%" />)}
+    </div>
+  </details>
+  {
+    resourcesImages.map((r) => (
+      <details>
+        <summary>View Resource {r.ident}</summary>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: .25rem;">
+          {r.images.map((img) => (
+            <img src={img} width="100%" alt={`Resource Image for ${r.ident}`} />
+          ))}
+        </div>
+      </details>
+    ))
+  }
+</EmbedLayout>
+
+<style>
+  details,
+  summary,
+  details summary * {
+    /* I think Astro JS issue, they blame the browser. */
+    color: var(--c-text);
+    text-decoration: none !important;
+  }
+
+  #tables {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 1.25rem;
+  }
+  #tables > table:last-of-type {
+    /* border: 1px solid yellow; */
+  }
+</style>
+
+<script is:inline define:vars={{ infoUrl }}>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const elements = {
+      yes: document.getElementById("js-votes-yes"),
+      no: document.getElementById("js-votes-no"),
+    };
+
+    const response = await fetch(infoUrl);
+    if (!response.ok) {
+      elements.yes.textContent = "Error getting votes.";
+      elements.no.textContent = "Error getting votes.";
+      return;
+    }
+
+    const data = await response.json();
+    elements.yes.textContent =
+      data.votes.yes.length > 0 ? data.votes.yes.join("; ") : "no votes";
+
+    elements.no.textContent =
+      data.votes.no.length > 0 ? data.votes.no.join("; ") : "no votes";
+  });
+</script>

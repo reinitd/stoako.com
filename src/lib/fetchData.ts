@@ -1,6 +1,6 @@
 import type { AuthHeader } from "../types";
 
-type TreeItem = {
+export type TreeItem = {
     path: string;
     mode: string;
     type: string;
@@ -8,16 +8,16 @@ type TreeItem = {
     url: string;
 };
 
-type GitTree = {
+export type GitTree = {
     sha: string;
     url: string;
     tree: TreeItem[];
     truncated: boolean;
 };
 
-export async function fromTree(toFindInTree: string, authHeader?: AuthHeader | {}): Promise<TreeItem[]> {
+export async function fromTree(repo: "stoako-data" | "stoako-bnr-data" | "stoako-bnr-data-images", toFindInTree: string, authHeader?: AuthHeader | {}): Promise<TreeItem[]> {
     let response = await fetch(
-        "https://api.github.com/repos/reinitd/stoako-data/git/trees/main",
+        `https://api.github.com/repos/reinitd/${repo}/git/trees/main`,
         authHeader
     );
     if (!response.ok) {

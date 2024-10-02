@@ -1,0 +1,160 @@
+---
+import Layout from "../../layouts/Layout.astro";
+---
+
+<Layout title="Stoako | Create BnR">
+  <strong>Create Proposition</strong>
+  <br />
+  <small
+    ><b>NOTE:</b> You must have already written up the proposition in a properly
+    formatted Google Doc.</small
+  >
+  <br />
+  <br />
+  <small
+    ><i
+      >Please copy and paste the values as typed in the Google Doc.<br />The
+      placeholders seen are from <a href="/bnr/view/1-7" target="_blank"
+        >Proposition 1-7</a
+      >.</i
+    ></small
+  >
+  <br />
+  <br />
+  <div>
+    <label>
+      <strong>Title</strong><br />
+      <input
+        required="true"
+        type="text"
+        id="js-title"
+        placeholder="Proposition Document Standards"
+        style="width: 75%;"
+      />
+    </label>
+    <br />
+    <br />
+    <label>
+      <strong>Reason</strong><br />
+      Proposition <input
+        required="true"
+        type="number"
+        id="js-article-count"
+        placeholder="1"
+        style="width: 5ch;"
+        min="1"
+      /> article(s) to <input
+        required="true"
+        type="text"
+        id="js-reason"
+        placeholder="standardize proposition documents"
+        style="width: 50%;"
+      />.
+    </label>
+    <br />
+    <br />
+    <label>
+      <strong>Proposed By</strong>
+      <small>(Seperated by a semicolon ('<b>;</b>') and space)</small><br />
+      <input
+        required="true"
+        type="text"
+        id="js-proposed-by"
+        style="width: 75%;"
+        placeholder="thesandmannn; Xx_example_xX"
+      />
+    </label>
+    <br />
+    <br />
+    <label>
+      <strong>Planned Date to Propose This Document to the Council</strong><br
+      />
+      <select id="js-date-month" required="true">
+        <option value="">SELECT</option>
+        <option value="Jan.">Jan.</option>
+        <option value="Feb.">Feb.</option>
+        <option value="Mar.">Mar.</option>
+        <option value="Apr.">Apr.</option>
+        <option value="May">May</option>
+        <option value="Jun.">Jun.</option>
+        <option value="Jul.">Jul.</option>
+        <option value="Aug.">Aug.</option>
+        <option value="Sep.">Sep.</option>
+        <option value="Oct.">Oct.</option>
+        <option value="Nov.">Nov.</option>
+        <option value="Dec.">Dec.</option>
+      </select>
+      <input type="number" id="js-date-day" placeholder="28" min="1" max="31" />
+      <select id="js-date-year" required="true">
+        <option value="Y7">Y7</option>
+        <option value="Y8">Y8</option>
+      </select>
+    </label>
+    <br />
+    <br />
+    <label>
+      <strong>Type</strong><br />
+      <select id="js-type" required="true">
+        <option value="">SELECT</option>
+        <option value="bill">Bill</option>
+        <option value="resolution">Resolution</option>
+      </select>
+    </label>
+    <br />
+    <br />
+    <label>
+      <strong>Google Doc Link to the Proposition</strong><br />
+      <input
+        required="true"
+        type="text"
+        id="js-doclink"
+        placeholder="https://docs.google.com/document/d/1d__TcBSAX0m9JDn4Sw9afjnUoc7mYlXxwhdKkfv2SuU"
+        style="width: 75%;"
+      />
+    </label>
+    <br />
+    <br />
+    <label>
+      <strong>Resources</strong>
+      <button type="button" id="js-editor-resource-remove">&minus;</button>
+      <button type="button" id="js-editor-resource-add">&plus;</button>
+      <br />
+      <span id="js-editor-resources"></span>
+    </label>
+
+    <br /><br /><br />
+    <button id="js-editor-submit" type="button">Create</button>
+  </div>
+  <div id="code-here" style="display: none;">
+    <br />
+    <p>
+      Please run command <code>cis.vote start</code> in the Discord server with the
+      attached QR code to start the voting process:
+    </p>
+    <br/>
+  </div>
+</Layout>
+
+<style>
+  code {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    box-shadow:
+      0 1px 1px rgba(0, 0, 0, 0.2),
+      0 2px 0 0 rgba(255, 255, 255, 0.7) inset;
+    color: #333;
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+  }
+</style>
+
+<script
+  is:inline
+  src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+></script>
+<script is:inline src="/js/create.js"></script>

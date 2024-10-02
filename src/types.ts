@@ -7,7 +7,7 @@ export type AuthHeader = {
 export type PropositionDocument = {
   title: string;
   prop: string;
-  data: string;
+  date: string;
   articleCount: string;
   reason: string;
   proposedBy: string[];

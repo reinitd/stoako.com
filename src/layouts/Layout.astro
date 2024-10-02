@@ -103,6 +103,7 @@ const { title } = Astro.props;
     /* --c-accent: black; */
     /* --c-accent: slategrey; */
     /* --c: #3232c5; */
+    --c-link: #2e91f2;
     --c-accent: #1d1d21;
     --c-text-accent: #545658;
     --c-hover: #835432;
@@ -124,6 +125,10 @@ const { title } = Astro.props;
     color: var(--c-text);
   }
 
+  a {
+    color: var(--c-link);
+  }
+
   #content > table {
     margin: 0;
     padding: 0;
@@ -133,6 +138,7 @@ const { title } = Astro.props;
     border-color: #aaaaaa;
     border-right-style: ridge;
     border-left-style: ridge;
+    /* min-height: 100vh; */
   }
 
   #content {

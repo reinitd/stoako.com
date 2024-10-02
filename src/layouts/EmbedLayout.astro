@@ -6,7 +6,7 @@ import ThemeToggle from "../components/ThemeToggle.astro";
 interface Props {
   title: string;
   embedTitle: string;
-  embedDescription: string
+  embedDescription: string;
 }
 
 const { title, embedTitle, embedDescription } = Astro.props;
@@ -23,17 +23,11 @@ const { title, embedTitle, embedDescription } = Astro.props;
     /><meta
       name="twitter:image:src"
       content="https://stoako.com/images/stoako.png"
-    /><meta
-      property="og:title"
-      content={embedTitle}
-    /><meta
+    /><meta property="og:title" content={embedTitle} /><meta
       property="og:description"
       content={embedDescription}
     />
-    <meta
-      name="description"
-      content={embedDescription}
-    />
+    <meta name="description" content={embedDescription} />
     <meta name="theme-color" content="#835432" /><link
       rel="sitemap"
       href="/sitemap-index.xml"
@@ -73,7 +67,7 @@ const { title, embedTitle, embedDescription } = Astro.props;
         </tbody>
       </table>
     </div>
-    <ThemeToggle/>
+    <ThemeToggle />
   </body>
 </html>
 
@@ -82,7 +76,11 @@ const { title, embedTitle, embedDescription } = Astro.props;
     const anchors = document.getElementsByTagName("a");
     for (let anchor of anchors) {
       // no #goto links, 2000s style site anyways. Too lazy to make this proper.
-      if (anchor.href.includes('#') && !anchor.classList.contains("ignore-url-check") && !anchor.href.includes("://thcotd.org") ) {
+      if (
+        anchor.href.includes("#") &&
+        !anchor.classList.contains("ignore-url-check") &&
+        !anchor.href.includes("://thcotd.org")
+      ) {
         anchor.style.color = "rgb(225,100,100)";
       }
     }
@@ -98,8 +96,11 @@ const { title, embedTitle, embedDescription } = Astro.props;
     /* --c-accent: cadetblue; */
     /* --c-accent: black; */
     /* --c-accent: slategrey; */
-    --c-accent: navy;
-    --c-hover: black;
+    /* --c: #3232c5; */
+    --c-link: #2e91f2;
+    --c-accent: #1d1d21;
+    --c-text-accent: #545658;
+    --c-hover: #835432;
   }
   html,
   body {
@@ -118,6 +119,10 @@ const { title, embedTitle, embedDescription } = Astro.props;
     color: var(--c-text);
   }
 
+  a {
+    color: var(--c-link);
+  }
+
   #content > table {
     margin: 0;
     padding: 0;
@@ -127,10 +132,11 @@ const { title, embedTitle, embedDescription } = Astro.props;
     border-color: #aaaaaa;
     border-right-style: ridge;
     border-left-style: ridge;
+    /* min-height: 100vh; */
   }
 
   #content {
-    width: 55rem;
+    width: 60rem;
     margin: 0 auto;
   }
 
@@ -158,7 +164,7 @@ const { title, embedTitle, embedDescription } = Astro.props;
   table strong {
     margin: 0;
   }
-  
+
   .data-table tr th {
     background-color: var(--c-accent);
     color: whitesmoke;

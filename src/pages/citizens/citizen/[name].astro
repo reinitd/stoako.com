@@ -31,7 +31,7 @@ const citizen = data.citizens.find((citizen) => citizen.name === name);
 const roles = citizen?.roles;
 const joinDate = citizen?.joinDate;
 
-const reportsData = await fromTree("reports", authHeader);
+const reportsData = await fromTree("stoako-data", "reports", authHeader);
 
 let reports = [];
 for (let i = 0; i < reportsData.length; i++) {
@@ -57,16 +57,20 @@ for (const _report of reports) {
 }
 
 let photoUrl;
-const mojangRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${name}`);
+const mojangRes = await fetch(
+  `https://api.mojang.com/users/profiles/minecraft/${name}`
+);
 if (!mojangRes.ok) {
-  photoUrl = 'https://ih1.redbubble.net/image.4990736138.0725/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.webp';
+  photoUrl =
+    "https://ih1.redbubble.net/image.4990736138.0725/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.webp";
 }
 
 const mojangData = await mojangRes.json();
 if (mojangData.id) {
   photoUrl = `https://crafthead.net/avatar/${mojangData.id}`;
 } else {
-  photoUrl = 'https://ih1.redbubble.net/image.4990736138.0725/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.webp';
+  photoUrl =
+    "https://ih1.redbubble.net/image.4990736138.0725/bg,f8f8f8-flat,750x,075,f-pad,750x1000,f8f8f8.webp";
 }
 ---
 
@@ -86,9 +90,11 @@ if (mojangData.id) {
                     <tbody>
                       <tr>
                         <th>Role<small>(s)</small>:</th>
-                        <td set:html={roles!
-                          .map((r) => `${r.role} of ${r.of}`)
-                          .join("<br/>")}></td>
+                        <td
+                          set:html={roles!
+                            .map((r) => `${r.role} of ${r.of}`)
+                            .join("<br/>")}
+                        />
                       </tr>
                       <tr>
                         <th>Joined:</th>
@@ -116,11 +122,7 @@ if (mojangData.id) {
                   </table>
                 </td>
                 <td valign="top" align="right">
-                  <img
-                    width="209px"
-                    src=`${photoUrl}`
-                    alt=`Photo of ${name}`
-                  />
+                  <img width="209px" src=`${photoUrl}` alt=`Photo of ${name}` />
                 </td>
               </tr>
             </tbody>

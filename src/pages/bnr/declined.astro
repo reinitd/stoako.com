@@ -1,0 +1,82 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getBnRs } from "../../lib/fetchBnRs";
+import { githubAuthHeader } from "../../helpers/secrets";
+
+const authHeader = (await githubAuthHeader()) || {};
+
+function buildGridChildHtml(text: string, href?: string): string {
+  let html =
+    '<p style="padding: 0.1rem; background-color: var(--c-text-accent); color: white;">';
+
+  if (href) {
+    html += `<a href="${href}">${text}</a>`;
+  } else {
+    html += text;
+  }
+
+  html += "</p>";
+  return html;
+}
+
+let billsHtml = buildGridChildHtml("None");
+let resolutionsHtml = buildGridChildHtml("None");
+
+const data = await getBnRs("declined", authHeader);
+if (data.length > 0) {
+  let bills = [];
+  let resolutions = [];
+
+  for (const ident of data) {
+    if (ident.toUpperCase().startsWith("RES")) {
+      resolutions.push(ident);
+    } else {
+      bills.push(ident);
+    }
+  }
+
+  if (bills.length > 0) {
+    billsHtml = "";
+    for (const bill of bills) {
+      const href = `/bnr/view/${bill}`;
+      billsHtml += buildGridChildHtml(bill, href);
+    }
+  }
+
+  if (resolutions.length > 0) {
+    resolutionsHtml = "";
+    for (const resolution of resolutions) {
+      const href = `/bnr/view/${resolution}`;
+      resolutionsHtml += buildGridChildHtml(resolution, href);
+    }
+  }
+}
+---
+
+<Layout title="Stoako | Declined BnRs">
+  <strong>Y7 Declined Bills</strong>
+  <div class="grid-4wide">
+    <Fragment set:html={billsHtml} />
+  </div>
+  <br />
+  <strong>Y7 Declined Resolutions</strong>
+  <div class="grid-4wide">
+    <Fragment set:html={resolutionsHtml} />
+  </div>
+</Layout>
+
+<style>
+  .grid-4wide {
+    margin-top: 0.25rem;
+    width: 40%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.2rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  .grid-4wide > * {
+    padding: 0.1rem;
+    background-color: var(--c-accent);
+  }
+</style>

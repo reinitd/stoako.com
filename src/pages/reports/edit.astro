@@ -7,7 +7,7 @@ import { githubAuthHeader } from "../../helpers/secrets";
 
 const authHeader = (await githubAuthHeader()) || {};
 
-const data = await fromTree("reports", authHeader);
+const data = await fromTree("stoako-data", "reports", authHeader);
 
 let validReports = [];
 for (var i = 0; i < data.length; i++) {

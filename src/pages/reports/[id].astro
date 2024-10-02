@@ -8,7 +8,7 @@ import { fromTree } from "../../lib/fetchData";
 export const authHeader = (await githubAuthHeader()) || {};
 
 export async function getStaticPaths() {
-  const data = await fromTree("reports", authHeader);
+  const data = await fromTree("stoako-data", "reports", authHeader);
 
   let paths = [];
   for (var i = 0; i < data.length; i++) {
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 }
 
 const { id } = Astro.params;
-const data = await fromTree("reports", authHeader);
+const data = await fromTree("stoako-data", "reports", authHeader);
 
 const item = data.find((item: { path: string }) =>
   item.path.includes(`${id} `)
