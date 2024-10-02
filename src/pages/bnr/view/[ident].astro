@@ -51,7 +51,7 @@ if (bnr.ministryOf != null) {
 
 const proposedBy = `<ul style="margin: 5px 0;">${bnr.proposedBy.map((proposer) => "<li>" + proposer + "</li>").join("")}</ul>`;
 
-const embedDescription = `${bnr.title}, ${bnr.articleCount} ${articleOrArticles} ${bnr.reason}. ${bnr.date}, ${bnr.approvedStatus}`;
+const embedDescription = `${bnr.title}, ${bnr.articleCount} ${articleOrArticles} to ${bnr.reason}. ${bnr.date}, ${bnr.approvedStatus}`;
 
 const splitIdent = ident.split("-");
 
