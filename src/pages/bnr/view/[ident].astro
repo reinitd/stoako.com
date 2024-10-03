@@ -44,11 +44,6 @@ if (bnr.articleCount != "1") {
   articleOrArticles += "s";
 }
 
-let ministryString = "";
-if (bnr.ministryOf != null) {
-  ministryString = bnr.ministryOf;
-}
-
 const proposedBy = `<ul style="margin: 5px 0;">${bnr.proposedBy.map((proposer) => "<li>" + proposer + "</li>").join("")}</ul>`;
 
 const embedDescription = `${bnr.title}, ${bnr.articleCount} ${articleOrArticles} to ${bnr.reason}. ${bnr.date}, ${bnr.approvedStatus}`;
@@ -122,7 +117,7 @@ const infoUrl = `https://raw.githubusercontent.com/reinitd/stoako-bnr-data/refs/
                 <td>
                   Proposing {bnr.articleCount}
                   {articleOrArticles} to {bnr.reason}.
-                  <br />{ministryString}
+                  <br />
                 </td>
               </tr>
               <tr>

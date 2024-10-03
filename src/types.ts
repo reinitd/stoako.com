@@ -11,7 +11,6 @@ export type PropositionDocument = {
   articleCount: string;
   reason: string;
   proposedBy: string[];
-  ministryOf: string | null;
   billOrResolution: string;
   approvedStatus: string;
   resources: {
