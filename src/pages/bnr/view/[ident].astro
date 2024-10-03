@@ -27,6 +27,8 @@ export async function getStaticPaths() {
 
 const { ident } = Astro.params;
 
+// console.log(`[IDENT] IDENT: ${ident.split("-")[1]}`);
+
 const docs = await getAllBnRsData(ident.split("-")[1], authHeader);
 if (docs == null) {
   throw new Error("Docs is null.");
@@ -36,7 +38,8 @@ const bnr: PropositionDocument | undefined = docs.find(
 );
 
 if (bnr == undefined) {
-  throw new Error("BNR is missing.");
+  console.log("BNR is missing.");
+  return;
 }
 
 let articleOrArticles = "article";
