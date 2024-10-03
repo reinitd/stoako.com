@@ -260,6 +260,29 @@ const infoUrl = `https://raw.githubusercontent.com/reinitd/stoako-bnr-data/refs/
 
 <script is:inline define:vars={{ infoUrl }}>
   document.addEventListener("DOMContentLoaded", async () => {
+    async function uuidToUsername(uuid) {
+      const url = `https://api.minetools.eu/uuid/${uuid}`;
+
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          return false;
+        }
+
+        const data = await response.json();
+
+        if (data.status.toLowerCase() !== "ok") {
+          return false;
+        }
+
+        return data.name;
+      } catch (error) {
+        console.error("Error fetching username:", error);
+        return false;
+      }
+    }
+
     const elements = {
       yes: document.getElementById("js-votes-yes"),
       no: document.getElementById("js-votes-no"),
@@ -273,10 +296,22 @@ const infoUrl = `https://raw.githubusercontent.com/reinitd/stoako-bnr-data/refs/
     }
 
     const data = await response.json();
-    elements.yes.textContent =
-      data.votes.yes.length > 0 ? data.votes.yes.join("; ") : "no votes";
 
-    elements.no.textContent =
-      data.votes.no.length > 0 ? data.votes.no.join("; ") : "no votes";
+    const formatVotes = async (votes) => {
+      const usernames = await Promise.all(
+        votes.map(async (uuid) => {
+          const username = await uuidToUsername(uuid);
+          if (username) {
+            return username;
+          } else {
+            return uuid.slice(0, 5) + "...";
+          }
+        })
+      );
+      return usernames.length > 0 ? usernames.join("; ") : "no votes";
+    };
+
+    elements.yes.textContent = await formatVotes(data.votes.yes);
+    elements.no.textContent = await formatVotes(data.votes.no);
   });
 </script>
