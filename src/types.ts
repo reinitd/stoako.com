@@ -1,6 +1,8 @@
 export type AuthHeader = {
   headers: {
     Authorization: string;
+    "Pragma": 'no-cache';
+    "Cache-Control": 'no-cache' 
   };
 };
 

@@ -7,11 +7,18 @@ export async function githubAuthHeader() {
         const authHeader: AuthHeader = {
             headers: {
                 Authorization: `Bearer ${pat.trim()}`,
+                "Pragma": 'no-cache',
+                "Cache-Control": 'no-cache'
             },
         };
         return authHeader;
     } catch (error) {
-        console.error("Error reading GH PAT file, using no headers.");
-        return null;
+        console.error("Error reading GH PAT file, using default no cache headers.");
+        return {
+            headers: {
+                "Pragma": 'no-cache',
+                "Cache-Control": 'no-cache'
+            }
+        };
     }
 }
