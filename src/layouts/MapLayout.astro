@@ -2,14 +2,20 @@
 import EmbedLayout from "./EmbedLayout.astro";
 
 interface Props {
-  title: string;
-  embedTitle: string;
-  embedDescription: string;
+    title: string;
+    embedTitle: string;
+    embedDescription: string;
+    imageUrl: string;
 }
 
-const { title, embedTitle, embedDescription } = Astro.props
+const { title, embedTitle, embedDescription, imageUrl } = Astro.props;
 ---
 
-<EmbedLayout title={title} embedTitle={embedTitle} embedDescription={embedDescription}>
+<EmbedLayout
+    title={title}
+    embedTitle={embedTitle}
+    embedDescription={embedDescription}
+    meta={[{property: "og:image", content: imageUrl}]}
+>
     <slot />
 </EmbedLayout>

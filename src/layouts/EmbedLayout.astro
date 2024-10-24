@@ -7,9 +7,10 @@ interface Props {
   title: string;
   embedTitle: string;
   embedDescription: string;
+  meta?: any[]
 }
 
-const { title, embedTitle, embedDescription } = Astro.props;
+const { title, embedTitle, embedDescription, meta = []} = Astro.props;
 ---
 
 <!doctype html>
@@ -32,6 +33,9 @@ const { title, embedTitle, embedDescription } = Astro.props;
       rel="sitemap"
       href="/sitemap-index.xml"
     />
+    {meta.map((tag) => (
+      <meta {...tag} />
+    ))}
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
