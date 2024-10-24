@@ -1,0 +1,15 @@
+---
+import EmbedLayout from "./EmbedLayout.astro";
+
+interface Props {
+  title: string;
+  embedTitle: string;
+  embedDescription: string;
+}
+
+const { title, embedTitle, embedDescription } = Astro.props
+---
+
+<EmbedLayout title={title} embedTitle={embedTitle} embedDescription={embedDescription}>
+    <slot />
+</EmbedLayout>
