@@ -2,10 +2,14 @@
 import EmbedLayout from "../layouts/EmbedLayout.astro";
 ---
 
-<EmbedLayout title="Stoako | Elgeis Family Tree" embedTitle="Stoako | Elgeis Family Tree" embedDescription="View the Elgeis family tree brought to you by the Kingdom of Stoako.">
+<EmbedLayout
+  title="Stoako | Elgeis Family Tree"
+  embedTitle="Stoako | Elgeis Family Tree"
+  embedDescription="View the Elgeis family tree brought to you by the Kingdom of Stoako."
+>
   <h2>Click, drag, and zoom</h2>
   <small>Last updated: 11/13/2024</small>
-  <br/>
+  <br />
   <a href="images/elgeis_family_tree.png" target="_blank">View Full Image</a>
   <canvas id="canvas"></canvas>
 </EmbedLayout>
@@ -39,6 +43,8 @@ import EmbedLayout from "../layouts/EmbedLayout.astro";
   let isDragging = false;
   let lastX = 0,
     lastY = 0;
+
+  let lastTouchDist = 0; // Track distance between touches for zooming
 
   // Wait for the image to load before drawing it
   image.onload = () => {
@@ -92,6 +98,70 @@ import EmbedLayout from "../layouts/EmbedLayout.astro";
     canvas.style.cursor = "grab";
   });
 
+  // Mobile support for dragging
+  canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+      canvas.style.cursor = "grabbing";
+    }
+  });
+
+  canvas.addEventListener("touchmove", (e) => {
+    if (isDragging && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      offsetX += dx;
+      offsetY += dy;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+      drawImage();
+    } else if (e.touches.length === 2) {
+      // Pinch-to-zoom handling for mobile
+      const touchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+
+      if (lastTouchDist === 0) {
+        lastTouchDist = touchDist;
+        return;
+      }
+
+      const zoomFactor = touchDist / lastTouchDist;
+      let newScale = scale * zoomFactor;
+
+      // Apply zoom limits
+      newScale = Math.min(Math.max(newScale, minZoom), maxZoom);
+
+      if (newScale !== scale) {
+        scale = newScale;
+        lastTouchDist = touchDist;
+
+        // Adjust offset to zoom around the center of the pinch
+        const centerX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        const centerY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+
+        offsetX = centerX - (centerX - offsetX) * zoomFactor;
+        offsetY = centerY - (centerY - offsetY) * zoomFactor;
+
+        drawImage();
+      }
+    }
+  });
+
+  canvas.addEventListener("touchend", () => {
+    if (isDragging) {
+      isDragging = false;
+      canvas.style.cursor = "grab";
+    }
+    if (e.touches.length < 2) {
+      lastTouchDist = 0; // Reset pinch distance when touch ends
+    }
+  });
+
+  // Zoom with mouse wheel
   const minZoom = 0.1; // Minimum zoom-in level
   const maxZoom = 5; // Maximum zoom-out level
 
