@@ -2,7 +2,6 @@ name: Deploy to GitHub Pages
 
 on:
   # Trigger the workflow every time you push to the `main` branch
-  # Using a different branch name? Replace `main` with your branch’s name
   push:
     branches: [ main ]
   # Allows you to run this workflow manually from the Actions tab on GitHub.
@@ -20,12 +19,21 @@ jobs:
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
+
+      # Step to create gh_pat.key file with the GitHub token
+      - name: Create GitHub PAT file
+        run: |
+          mkdir -p secrets
+          echo "${{ secrets.GITHUB_TOKEN }}" > secrets/gh_pat.key
+        # Alternatively, use a custom PAT if stored as a repo secret:
+        # echo "${{ secrets.GH_PAT }}" > secrets/gh_pat.key
+
       - name: Install, build, and upload your site
         uses: withastro/action@v2
         with:
-          path: . # The root location of your Astro project inside the repository. (optional)
-          # node-version: 20 # The specific version of Node that should be used to build your site. Defaults to 20. (optional)
-          # package-manager: pnpm@latest # The Node package manager that should be used to install dependencies and build your site. Automatically detected based on your lockfile. (optional)
+          path: . # The root location of your Astro project inside the repository.
+          # node-version: 20 # Optional: Specify Node version if different from default.
+          # package-manager: pnpm@latest # Optional: Specify package manager if different from default.
 
   deploy:
     needs: build
@@ -37,3 +45,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      # Optional cleanup step to remove secrets/gh_pat.key
+      - name: Clean up token file
+        run: rm -f secrets/gh_pat.key
