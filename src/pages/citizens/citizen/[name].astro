@@ -38,6 +38,8 @@ for (let i = 0; i < reportsData.length; i++) {
   const _report = reportsData[i];
   const url = _report.url;
   const reportResponse = await fetch(url, authHeader);
+  console.log(`Report Response Status Code: ${reportResponse.status}`)
+  console.log(`Report Response Status Text: ${reportResponse.statusText}`)
   const reportData = await reportResponse.json();
 
   const content = Buffer.from(reportData.content, "base64").toString("binary");
