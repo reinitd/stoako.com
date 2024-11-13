@@ -1,0 +1,141 @@
+---
+import EmbedLayout from "../layouts/EmbedLayout.astro";
+---
+
+<EmbedLayout title="Stoako | Elgeis Family Tree" embedTitle="Stoako | Elgeis Family Tree" embedDescription="View the Elgeis family tree brought to you by the Kingdom of Stoako.">
+  <!-- <div class="image-container">
+    <img
+      src="images/elgeis_family_tree.png"
+      alt="Oversized Image"
+      class="zoomable-image"
+    />
+  </div> -->
+  <h2>Click, drag, and zoom</h2>
+  <small>Last updated: 11/13/2024</small>
+  <br/>
+  <a href="images/elgeis_family_tree.png" target="_blank">View Full Image</a>
+  <canvas id="canvas"></canvas>
+</EmbedLayout>
+
+<style>
+  canvas {
+    display: block;
+    background-color: #eee;
+    cursor: grab;
+    width: 100%;
+  }
+
+  h2 {
+    margin: 0;
+    padding: 0;
+  }
+</style>
+
+<script is:inline>
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+
+  canvas.style.backgroundColor = "black";
+
+  const image = new Image();
+  image.src = "images/elgeis_family_tree.png"; // Replace with your image URL
+
+  let scale = 1; // Initial zoom scale
+  let offsetX = 0,
+    offsetY = 0; // Initial offset for panning
+  let isDragging = false;
+  let lastX = 0,
+    lastY = 0;
+
+  // Wait for the image to load before drawing it
+  image.onload = () => {
+    // Set canvas size to match the image dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Draw the initial image on the canvas
+    drawImage();
+  };
+
+  // Draw the image with current scale and offsets
+  function drawImage() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+    ctx.drawImage(
+      image,
+      offsetX,
+      offsetY,
+      image.width * scale,
+      image.height * scale
+    );
+  }
+
+  // Handle mouse events for dragging
+  canvas.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    lastX = e.offsetX;
+    lastY = e.offsetY;
+    canvas.style.cursor = "grabbing";
+  });
+
+  canvas.addEventListener("mousemove", (e) => {
+    if (isDragging) {
+      const dx = e.offsetX - lastX;
+      const dy = e.offsetY - lastY;
+      offsetX += dx;
+      offsetY += dy;
+      lastX = e.offsetX;
+      lastY = e.offsetY;
+      drawImage();
+    }
+  });
+
+  canvas.addEventListener("mouseup", () => {
+    isDragging = false;
+    canvas.style.cursor = "grab";
+  });
+
+  canvas.addEventListener("mouseout", () => {
+    isDragging = false;
+    canvas.style.cursor = "grab";
+  });
+
+  const minZoom = 0.1; // Minimum zoom-in level
+  const maxZoom = 5; // Maximum zoom-out level
+
+  canvas.addEventListener("wheel", (e) => {
+    e.preventDefault();
+
+    const zoomFactor = 1.1;
+    const mouseX = e.offsetX;
+    const mouseY = e.offsetY;
+
+    // Determine new scale based on zoom direction
+    let newScale = scale;
+    if (e.deltaY < 0) {
+      // Zoom in (increase scale)
+      newScale *= zoomFactor;
+    } else {
+      // Zoom out (decrease scale)
+      newScale /= zoomFactor;
+    }
+
+    // Apply zoom limits
+    newScale = Math.min(Math.max(newScale, minZoom), maxZoom);
+
+    // If the scale hasn't changed, don't update offsets
+    if (newScale === scale) return;
+
+    // Calculate how much the zoom changes in scale
+    const scaleChange = newScale / scale;
+
+    // Adjust offsets so zoom happens around the mouse position
+    offsetX = mouseX - (mouseX - offsetX) * scaleChange;
+    offsetY = mouseY - (mouseY - offsetY) * scaleChange;
+
+    // Update the scale
+    scale = newScale;
+
+    // Redraw the image with the new scale and offset
+    drawImage();
+  });
+</script>
