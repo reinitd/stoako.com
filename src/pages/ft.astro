@@ -3,13 +3,6 @@ import EmbedLayout from "../layouts/EmbedLayout.astro";
 ---
 
 <EmbedLayout title="Stoako | Elgeis Family Tree" embedTitle="Stoako | Elgeis Family Tree" embedDescription="View the Elgeis family tree brought to you by the Kingdom of Stoako.">
-  <!-- <div class="image-container">
-    <img
-      src="images/elgeis_family_tree.png"
-      alt="Oversized Image"
-      class="zoomable-image"
-    />
-  </div> -->
   <h2>Click, drag, and zoom</h2>
   <small>Last updated: 11/13/2024</small>
   <br/>
@@ -38,7 +31,7 @@ import EmbedLayout from "../layouts/EmbedLayout.astro";
   canvas.style.backgroundColor = "black";
 
   const image = new Image();
-  image.src = "images/elgeis_family_tree.png"; // Replace with your image URL
+  image.src = "/images/elgeis_family_tree.png"; // Replace with your image URL
 
   let scale = 1; // Initial zoom scale
   let offsetX = 0,
