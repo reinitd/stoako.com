@@ -21,7 +21,7 @@ export async function getAllBnRs(authHeader?: AuthHeader | {}): Promise<string[]
 
 export async function getBnRs(status: Status, authHeader?: AuthHeader | {}): Promise<string[]> {
     let response = await fetch(
-        `https://github.com/reinitd/stoako-data/blob/main/bills-and-resolutions/${status}.json?raw=true`,
+        `https://raw.githubusercontent.com/reinitd/stoako-data/main/bills-and-resolutions/${status}.json`,
         authHeader
     );
 
