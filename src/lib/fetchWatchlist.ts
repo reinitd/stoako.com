@@ -3,7 +3,7 @@ import type { Watchlist } from "../types";
 
 export async function watchlist(authHeader?: AuthHeader | {}): Promise<Watchlist> {
     let response = await fetch(
-        "https://github.com/reinitd/stoako-data/blob/main/watchlist.json?raw=true",
+        "https://raw.githubusercontent.com/reinitd/stoako-data/main/watchlist.json",
         authHeader
     );
     if (!response.ok) {
