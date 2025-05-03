@@ -2,7 +2,7 @@ import type { AuthHeader, Citizen } from "../types";
 import type { CitizensList } from "../types";
 
 export async function fetchCitizens(headers?: AuthHeader | {}): Promise<CitizensList> {
-    const response = await fetch('https://github.com/reinitd/stoako-data/blob/main/citizens.json?raw=true', headers);
+    const response = await fetch('https://raw.githubusercontent.com/reinitd/stoako-data/main/citizens.json', headers);
 
     if (!response.ok) {
         throw new Error("Couldn't get citizens from GitHub.");
